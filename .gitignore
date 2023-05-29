@@ -1,3 +1,8 @@
 
 *.jpg
 *.png
+models
+*.pyc
+data/DUTS-TR/.DS_Store
+path/dataset/DUTS-TE/.DS_Store
+*.pth
