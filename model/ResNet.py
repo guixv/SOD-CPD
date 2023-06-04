@@ -1,5 +1,6 @@
 import torch.nn as nn
 import math
+import torch
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -140,3 +141,11 @@ class B2_ResNet(nn.Module):
         x2 = self.layer4_2(x2)
 
         return x1, x2
+
+
+if __name__ == '__main__':
+    module = B2_ResNet().cuda()
+    a = torch.zeros(1,3,256,256).cuda()
+    out1,out2 = module(a)
+    print(out1.size())
+    print(out2.size())

@@ -1,11 +1,8 @@
-Cascaded Partial Decoder for Fast and Accurate Salient Object Detection (CVPR2019)
-====
-
-Our model ranks first in the challenging [SOC benchmark](http://dpfan.net/SOCBenchmark/) up to now (2019.11.6).
+SOD project base on CPD
 
 Requirements: 
 ----
-python2.7, pytorch 0.4.0
+python2.7+, pytorch 0.4.0+
 
 Usage
 -----

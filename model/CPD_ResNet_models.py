@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import math
 
 from model.HolisticAttention import HA
 from model.ResNet import B2_ResNet
@@ -146,20 +147,17 @@ class CPD_ResNet(nn.Module):
         return self.upsample(attention_map), self.upsample(detection_map)
 
     def initialize_weights(self):
-        res50 = models.resnet50(weights=None)
-        pretrained_dict = res50.state_dict()
-        all_params = {}
-        for k, v in self.resnet.state_dict().items():
-            if k in pretrained_dict.keys():
-                v = pretrained_dict[k]
-                all_params[k] = v
-            elif '_1' in k:
-                name = k.split('_1')[0] + k.split('_1')[1]
-                v = pretrained_dict[name]
-                all_params[k] = v
-            elif '_2' in k:
-                name = k.split('_2')[0] + k.split('_2')[1]
-                v = pretrained_dict[name]
-                all_params[k] = v
-        assert len(all_params.keys()) == len(self.resnet.state_dict().keys())
-        self.resnet.load_state_dict(all_params)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+
+if __name__ == '__main__':
+    module = CPD_ResNet().cuda()
+    a = torch.zeros(1,3,224,224).cuda()
+    out1,out2 = module(a)
+    print(out1.size())
+    print(out2.size())

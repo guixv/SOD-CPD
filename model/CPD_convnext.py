@@ -52,7 +52,7 @@ class RFB(nn.Module):
             BasicConv2d(out_channel, out_channel, kernel_size=(7, 1), padding=(3, 0)),
             BasicConv2d(out_channel, out_channel, 3, padding=7, dilation=7)
         )
-        self.conv_cat = BasicConv2d(4*out_channel, out_channel, 3, padding=1)
+        self.conv_cat = BasicConv2d(4 * out_channel, out_channel, 3, padding=1)
         self.conv_res = BasicConv2d(in_channel, out_channel, 1)
 
     def forward(self, x):
@@ -66,6 +66,7 @@ class RFB(nn.Module):
         x = self.relu(x_cat + self.conv_res(x))
         return x
 
+
 class aggregation(nn.Module):
     # dense aggregation, it can be replaced by other aggregation model, such as DSS, amulet, and so on.
     # used after MSF
@@ -78,12 +79,12 @@ class aggregation(nn.Module):
         self.conv_upsample2 = BasicConv2d(channel, channel, 3, padding=1)
         self.conv_upsample3 = BasicConv2d(channel, channel, 3, padding=1)
         self.conv_upsample4 = BasicConv2d(channel, channel, 3, padding=1)
-        self.conv_upsample5 = BasicConv2d(2*channel, 2*channel, 3, padding=1)
+        self.conv_upsample5 = BasicConv2d(2 * channel, 2 * channel, 3, padding=1)
 
-        self.conv_concat2 = BasicConv2d(2*channel, 2*channel, 3, padding=1)
-        self.conv_concat3 = BasicConv2d(3*channel, 3*channel, 3, padding=1)
-        self.conv4 = BasicConv2d(3*channel, 3*channel, 3, padding=1)
-        self.conv5 = nn.Conv2d(3*channel, 1, 1)
+        self.conv_concat2 = BasicConv2d(2 * channel, 2 * channel, 3, padding=1)
+        self.conv_concat3 = BasicConv2d(3 * channel, 3 * channel, 3, padding=1)
+        self.conv4 = BasicConv2d(3 * channel, 3 * channel, 3, padding=1)
+        self.conv5 = nn.Conv2d(3 * channel, 1, 1)
 
     def forward(self, x1, x2, x3):
         x1_1 = x1
@@ -101,6 +102,7 @@ class aggregation(nn.Module):
         x = self.conv5(x)
 
         return x
+
 
 class CPD_convnext(nn.Module):
     # resnet based encoder decoder
@@ -156,7 +158,7 @@ class CPD_convnext(nn.Module):
 
 if __name__ == '__main__':
     module = CPD_convnext().cuda()
-    a = torch.zeros(1,3,256,256).cuda()
-    out1,out2 = module(a)
+    a = torch.zeros(1, 3, 256, 256).cuda()
+    out1, out2 = module(a)
     print(out1.size())
     print(out2.size())
