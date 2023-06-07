@@ -8,9 +8,7 @@ from tqdm import tqdm
 import torch.optim.lr_scheduler as lr_scheduler
 import math
 
-from model.CPD_models import CPD_VGG
-from model.CPD_convnext import CPD_convnext
-from model.CPD_ResNet_models import CPD_ResNet
+from model.PVT import pvt_tiny
 from data import get_loader
 from utils import clip_gradient, adjust_lr
 
@@ -25,10 +23,8 @@ def train(train_loader, model, optimizer, epoch,scheduler):
         images = images.cuda()
         gts = gts.cuda()
 
-        atts, dets = model(images)
-        loss1 = CE(atts, gts)
-        loss2 = CE(dets, gts)
-        loss = loss1 + loss2
+        dets = model(images)
+        loss = CE(dets, gts)
         loss.backward()
 
         clip_gradient(optimizer, opt.clip)
@@ -36,8 +32,8 @@ def train(train_loader, model, optimizer, epoch,scheduler):
         scheduler.step()  #更新学习率
 
         if i == 400 or i == total_step:
-            print('{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], Loss1: {:.4f} Loss2: {:0.4f}'.
-                  format(datetime.now(), epoch, opt.epoch, i, total_step, loss1.data, loss2.data))
+            print('{} Epoch [{:03d}/{:03d}], Step [{:04d}/{:04d}], Loss: {:.4f}'.
+                  format(datetime.now(), epoch, opt.epoch, i, total_step, loss.data))
 
     save_path = opt.save_path
 
@@ -57,18 +53,18 @@ if __name__ == "__main__":
     parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
     parser.add_argument('--decay_rate', type=float, default=0.05, help='decay rate of learning rate')
     # parser.add_argument('--decay_epoch', type=int, default=50, help='every n epochs decay learning rate')
-    parser.add_argument('--save_path', type=str, default='models/CPD_res1/', help='save path')
+    parser.add_argument('--save_path', type=str, default='models/PVT/', help='save path')
     parser.add_argument("--image_path", type=str, default='data/DUTS-TR/DUTS-TR-Image/')
     parser.add_argument("--mask_path", type=str, default='data/DUTS-TR/DUTS-TR-Mask/')
     opt = parser.parse_args()
 
     print('Learning Rate: {} '.format(opt.lr))
     # build models
-    model = CPD_ResNet()
+    model = pvt_tiny()
 
     model.cuda()
     params = model.parameters()
-    # optimizer = torch.optim.Adam(params, opt.lr)  
+    # optimizer = torch.optim.Adam(params, opt.lr)
     # optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9)  # 优化器
     optimizer = torch.optim.AdamW(model.parameters(), lr=opt.lr, betas=(0.9, 0.9999))
 
