@@ -6,9 +6,9 @@ import pdb, os, argparse
 import scipy
 import imageio
 
-from model.CPD_models import CPD_VGG
-from model.CPD_ResNet_models import CPD_ResNet
-from model.CPD_convnext import CPD_convnext
+
+from model.PVT import pvt_tiny,pvt_small,pvt_medium,pvt_large
+from model.pvt_v2 import pvt_v2b2
 from data import test_dataset
 from tqdm import tqdm
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     dataset_path = 'path/dataset/'
 
-    model = CPD_ResNet()
+    model = pvt_v2b2()
     model.load_state_dict(torch.load('epoch_300_CPD.pth'))
 
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     test_datasets = ['DUTS-TE']
 
     for dataset in test_datasets:
-        save_path = './results/res_300/' + dataset + '/'
+        save_path = './results/pvtv2_300/' + dataset + '/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         image_root = dataset_path + dataset + '/DUTS-TE-Image/'
